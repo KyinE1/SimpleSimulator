@@ -3,7 +3,7 @@
 #include "sml.h"
 #include "simplesim.h"
 
-/**	Simple simulator to emulate the CPU.
+/** Simple simulator to emulate the CPU.
  * 
  * @param memory: To store addresses.
  * @param accumulator: Register for arithmetic.

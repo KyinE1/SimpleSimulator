@@ -1,10 +1,4 @@
-/*
-	sml.h
-	Date Written: 2/12
-	Created by: Kyin Edwards
-	
-	Header file for the instructions.
-*/
+/** The instruction codes. */
 
 #ifndef SML_H
 #define SML_H

@@ -1,58 +1,39 @@
-/*
-	simplesim.cpp
-	Date Written: 2/12
-	Created by: Kyin Edwards
-*/
-
 #include <iostream>
 #include <iomanip>
-
 #include "sml.h"
 #include "simplesim.h"
 
-/*
-	The simple simulator used to dump registers and memory addresses. The simplesim member function is for the initialization process of a simplesim object.
+/**	Simple simulator to emulate the CPU.
+ * 
+ * @param memory: To store addresses.
+ * @param accumulator: Register for arithmetic.
+ * @param instruction_counter: The next instruction.
+ * @param instruction_register: A copy of the current instruction.
+ * @param operand: Half of the word to hold the MSB of instruction_register. 
+ */
 
-	@param memory store the addresses 0-99.
-		
-	@param accumulator for holding a single word for the arithmetic operations or testing the values (arimethic and branching cases).
-		
-	@param instruction_counter for holding a single memory location of two digits for the next instruction.
-		
-	@param instruction_register for holding a single word to hold a copy of the instruction that is being executed. 
-		
-	@param operation_code holds half a word (two digits) to store the leftmost half of an instruction_register. 
-		
-	@param operand holds half a word (two digits) to store the rightmost half of an instruction_register.
-*/
-
-/*
-	Overview: simplesim sets each array value to 7777.
-*/
+/** Set memory array to 7777. */
 simplesim::simplesim() {
 	for (int i = 0; i < 100; i++)
 		memory[i] = 7777;
 }
 
-/*
-	Reads an SML program from standard input and will load it into memory after the conditions. The conditions verify if it is a valid word.
-
-	@param instruction for stdin. 
-
-	@return: Returns false if no longer loading input and will proceed to the dump member function given that the input is not in the specified range of the not_valid_word member function. 
-*/
+/** Process the instructions.
+ *
+ * @return: False if there's no valid input. 
+ */
 bool simplesim::load_program() {
 	int count = 0;
 	int instruction;
 
 	while (std::cin >> instruction && instruction != -99999) {
 		if (not_valid_word(instruction)) {
-			std::cout << "*** ABEND: pgm load: invalid word ***\n";
+			std::cout << "*** ABEND: pgm load: invalid word. ***\n";
 			return false;
 		}
 
 		if (count >= 100) {
-			std::cout << "*** ABEND: pgm load: pgm too large ***\n";
+			std::cout << "*** ABEND: pgm load: pgm too large. ***\n";
 			return false;
 		}
 
@@ -64,31 +45,29 @@ bool simplesim::load_program() {
 }
 
 
-/*
-	Used for verifying the specified range of the word. 
-
-	@param word four digit variable.  
-
-	@return if the input is outside of the range, return result. 
-*/
+/** Used for verifying the specified range of the word. 
+ *
+ * @param word: Four digit variable. 
+ * @return: Whether the word exceeds the range. 
+ */
 bool simplesim::not_valid_word(int word) const {
 	return (word < -9999 || word > 9999);
 }
 
-/*
-	Execute the SML program. The function iterates through a loop one instruction at a time in a two-step process; instruction fetch and instruction execute. 
-
-	@param done flag for end of loop.  
-
-	@return if the function returns false, proceed to dump. 
-*/
+/** Fetch the instruction from memory and execute.
+ *
+ * @param done: Flag.
+ * @return: If false, dump the contents of the memory array. 
+ */
 void simplesim::execute_program() {
 	bool done = false;
 
-	// Tests instruction counter in while loop (instruction_counter register. If valid memory location (0-99), instruction_register will load with the word and split the instruction_register by placing leftmost two digits into operation_code register and rightmost two digits in the operand register).
+	// If valid memory location (0-99), instruction_register will load with the word 
+	// and split the instruction_register by placing leftmost two digits into 
+	// operation_code register and rightmost two digits in the operand register).
 	while (!done) {
 		if (instruction_counter >= 100) {
-			std::cout << "*** ABEND: addressability error ***\n";
+			std::cout << "*** ABEND: addressability error. ***\n";
 			return;
 		}
 
@@ -118,7 +97,7 @@ void simplesim::execute_program() {
 				break;
 			}
 			
-			// Print the word in memory from location of operand (should look like +0010). 	
+			// Print the word in memory from location of operand. 	
 			case WRITE: {
 				std::cout << std::internal << std::showpos << std::setfill('0') << std::setw(5) << memory[operand] << std::endl;
 				break;
@@ -138,12 +117,12 @@ void simplesim::execute_program() {
 				int result = accumulator + memory[operand];
 
 				if (result < -9999) {
-					std::cout << "*** ABEND: underflow ***\n";
+					std::cout << "*** ABEND: underflow. ***\n";
 					return;
 				}
 
 				if (result > 9999) {
-					std::cout << "*** ABEND: overflow ***\n";
+					std::cout << "*** ABEND: overflow. ***\n";
 					return;
 				}
 
@@ -155,12 +134,12 @@ void simplesim::execute_program() {
 				int result = accumulator - memory[operand];
 
 				if (result < -9999) {
-					std::cout << "*** ABEND: underflow ***\n";
+					std::cout << "*** ABEND: underflow. ***\n";
 					return;
 				}
 
 				if (result > 9999) {
-					std::cout << "*** ABEND: overflow ***\n";
+					std::cout << "*** ABEND: overflow. ***\n";
 					return;
 				}
 
@@ -172,12 +151,12 @@ void simplesim::execute_program() {
 				int result = accumulator * memory[operand];
 
 				if (result < -9999) {
-					std::cout << "*** ABEND: underflow ***\n";
+					std::cout << "*** ABEND: underflow. ***\n";
 					return;
 				}
 
 				if (result > 9999) {
-					std::cout << "*** ABEND: overflow ***\n";
+					std::cout << "*** ABEND: overflow. ***\n";
 					return;
 				}
 
@@ -187,7 +166,7 @@ void simplesim::execute_program() {
 			
 			case DIVIDE: {
 				if (memory[operand] == 0) {
-					std::cout << "*** ABEND: attempted division by 0 ***\n";
+					std::cout << "*** ABEND: attempted division by 0. ***\n";
 					return;
 				}
 
@@ -216,15 +195,14 @@ void simplesim::execute_program() {
 				break;
 			}
 			
-			// End given that there are no errors. 
 			case HALT: {
-				std::cout << "*** Simplesim execution terminated ***\n";
+				std::cout << "*** Simplesim execution terminated. ***\n";
 				done = true;
 				break;
 			}
 			
 			default: {
-				std::cout << "*** ABEND: invalid opcode ***\n";
+				std::cout << "*** ABEND: invalid opcode. ***\n";
 				return;
 			}
 		}
@@ -235,9 +213,7 @@ void simplesim::execute_program() {
 }
 
 
-/*
-	Dump the content of the simplesim's registers and memory addresses.  
-*/
+/** Dump the content of the simplesim's registers and memory addresses. */
 void simplesim::dump() const {
 	int rows = 0;
 
@@ -250,23 +226,19 @@ void simplesim::dump() const {
 	std::cout << std::left << std::setfill(' ') << std::setw(24) << "operation_code:" << std::internal << std::noshowpos << std::setfill('0') << std::setw(2) << operation_code << std::endl;
 	std::cout << std::left << std::setfill(' ') << std::setw(24) << "operand:" << std::internal << std::noshowpos << std::setfill('0') << std::setw(2) << operand << std::endl;
 
-	// Print the memeory. 
+	// Print the memory addresses.
 	std::cout << "\nMEMORY:\n";
-
 	for (int columns = 0; columns != 10; columns++) {
 		if (columns != 0)
 			std::cout << std::setw(6) << std::noshowpos <<std::setfill(' ') << columns;
-		
 		else 
 			std::cout << std::setw(8) << std::noshowpos <<std::setfill(' ') << columns;
 	}
 
-	// For contents of memory.
 	for (int i = 0; i < 100; i++) {
 		if (i % 10 == 0) {
 			if (rows != 0)
-				std::cout << std::endl << std::noshowpos << rows;
-				
+				std::cout << std::endl << std::noshowpos << rows;				
 			else
 				std::cout << std::endl << std::noshowpos << " " << rows;
 				

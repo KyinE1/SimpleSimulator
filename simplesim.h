@@ -1,9 +1,3 @@
-/*
-	simplesim.h
-	Date Written: 2/12
-	Created by: Kyin Edwards
-*/
-
 #ifndef SIMPLESIM_H
 #define SIMPLESIM_H
 
